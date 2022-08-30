@@ -1,6 +1,6 @@
 # AppCenter Gradle Plugin
 
-[![Gradle Plugins Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/ru/mosgorpass/appcenter/ru.mosgorpass.appcenter.gradle.plugin/maven-metadata.xml.svg?label=Gradle%20Plugins%20Portal)](https://plugins.gradle.org/plugin/ru.mosgorpass.appcenter)
+[![Gradle Plugins Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/io/github//appcenter/io.github.angrycitizen.appcenter.gradle.plugin/maven-metadata.xml.svg?label=Gradle%20Plugins%20Portal)](https://plugins.gradle.org/plugin/io.github.angrycitizen.appcenter)
 
 ## Summary
 
@@ -20,7 +20,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "gradle.plugin.com.betomorrow.gradle:appcenter-plugin:2.0.4"
+        classpath "io.github.angrycitizen:appcenter-plugin:1.0.0"
     }
 }
 
