@@ -5,7 +5,7 @@
 ## Summary
 
 This plugin allow you to upload android application to AppCenter. You can declare several
-applications, the plugin will take care of uploading the APK or AAB on the right AppCenter
+applications, the plugin will take care of uploading the APK and AAB on the right AppCenter
 application
 
 ## Quick Start
@@ -20,7 +20,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "io.github.angrycitizen:appcenter-plugin:1.0.0"
+        classpath "io.github.angrycitizen:appcenter-plugin:1.1.0"
     }
 }
 

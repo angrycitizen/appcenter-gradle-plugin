@@ -4,8 +4,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Call
 import retrofit2.Response
+import ru.mosgorpass.gradle.appcenter.tasks.UploadAppCenterAppPackageTask
 import java.io.File
-import java.util.Locale
 
 private const val RELEASE_URL_TEMPLATE =
     "https://appcenter.ms/orgs/%s/apps/%s/distribute/releases/%s"
@@ -28,7 +28,8 @@ class AppCenterUploader(
         changeLog: String,
         destinationNames: List<String>,
         notifyTesters: Boolean,
-        logger: (String) -> Unit
+        packageType: UploadAppCenterAppPackageTask.PackageType,
+        logger: (String) -> Unit,
     ) {
         logger("Step 1/7 : Prepare release upload")
         val apiClient = apiFactory.createApi()
@@ -87,15 +88,10 @@ class AppCenterUploader(
         } while (uploadResult?.uploadStatus != "readyToBePublished")
 
         val uploadedReleaseId = uploadResult.releaseId
-        val destinations = if (file.extension.toLowerCase(Locale.ROOT) != "aab") {
-            destinationNames.map { DistributeRequest.Destination(it) }.toList()
-        } else {
-            null
-        }
 
         logger("Step 7/7 : Distribute release")
         val request = DistributeRequest(
-            destinations = destinations,
+            destinations = destinationNames.map { DistributeRequest.Destination(it) }.toList(),
             releaseNotes = changeLog,
             notifyTesters = notifyTesters
         )
@@ -103,11 +99,7 @@ class AppCenterUploader(
         apiClient.distribute(ownerName, appName, uploadedReleaseId!!, request).executeOrThrow()
         println(
             "AppCenter release url is ${
-                RELEASE_URL_TEMPLATE.format(
-                    ownerName,
-                    appName,
-                    uploadedReleaseId
-                )
+                RELEASE_URL_TEMPLATE.format(ownerName, appName, uploadedReleaseId)
             }"
         )
     }

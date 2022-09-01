@@ -32,7 +32,8 @@ open class UploadAppCenterAppPackageTask @Inject constructor(
             fileProvider(),
             toReleaseNotes(releaseNotes),
             distributionGroups,
-            notifyTesters
+            notifyTesters,
+            packageType
         ) {
             loggerRelease.progress(it)
         }

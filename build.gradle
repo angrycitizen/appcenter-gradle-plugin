@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion= '1.5.30'
+        kotlinVersion= '1.7.10'
     }
     repositories {
         mavenCentral()
@@ -23,14 +23,14 @@ apply plugin: 'kotlin'
 apply plugin: 'maven-publish'
 
 group 'io.github.angrycitizen'
-version '1.0.0'
+version '1.1.0'
 
 repositories {
     mavenCentral()
     google()
 }
 
-configurations {
+/*configurations {
     integrationTestCompile.extendsFrom testCompile
     integrationTestRuntime.extendsFrom testRuntime
     integrationTestImplementation.extendsFrom testImplementation
@@ -44,7 +44,7 @@ configurations.all {
             details.useVersion "${kotlinVersion}"
         }
     }
-}
+}*/
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}"
@@ -63,17 +63,17 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    /*testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     testRuntimeOnly'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 
     testImplementation 'org.assertj:assertj-core:3.19.0'
     testImplementation gradleTestKit()
 
     testRuntimeOnly "cglib:cglib-nodep:3.3.0"        // allows mocking of classes (in addition to interfaces)
-    testRuntimeOnly "org.objenesis:objenesis:3.2"    // allows mocking of classes without default constructor (together with CGLIB)
+    testRuntimeOnly "org.objenesis:objenesis:3.2"*/    // allows mocking of classes without default constructor (together with CGLIB)
 }
 
-compileKotlin {
+/*compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 compileTestKotlin {
@@ -82,12 +82,12 @@ compileTestKotlin {
 
 test {
     useJUnitPlatform {}
-}
+}*/
 
 /**
  * Integration test
  */
-sourceSets {
+/*sourceSets {
     integrationTest {
         compileClasspath += main.output + test.output
         runtimeClasspath += main.output + test.output
@@ -104,12 +104,13 @@ task integrationTest(type: Test, group: "verification") {
     mustRunAfter test
 
     useJUnitPlatform()
-}
+}*/
 
-// check.dependsOn integrationTest
+sourceCompatibility = 11
+targetCompatibility = 11
 
 gradlePlugin {
-    testSourceSets sourceSets.integrationTest
+    //testSourceSets sourceSets.integrationTest
     plugins {
         appCenterPlugin {
             id = 'io.github.angrycitizen.appcenter'
@@ -128,8 +129,8 @@ task sourceJar(type: Jar) {
 }
 
 wrapper {
-    gradleVersion = "7.2"
-    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = "7.3.3"
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 pluginBundle {

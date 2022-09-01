@@ -4,7 +4,6 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.api.ApkVariantOutput
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.internal.api.ApkVariantImpl
-import com.android.build.gradle.internal.scope.InternalArtifactType
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -51,9 +50,8 @@ class AppCenterPlugin : Plugin<Project> {
         }.firstOrNull() ?: appCenterExtension.findByBuildVariant(apkVariant.name)
 
         appCenterApp?.let {
-            val outputDirectory =
-                apkVariant.packageApplicationProvider.get().outputDirectory.get().asFile
             val assembleTask = apkVariant.assembleProvider.get()
+            val bundleTask = apkVariant.variantData.taskContainer.bundleTask!!.get()
 
             apkVariant.outputs.all { output ->
                 if (output is ApkVariantOutput) {
@@ -62,17 +60,29 @@ class AppCenterPlugin : Plugin<Project> {
                     val taskSuffix = "${apkVariant.name.capitalize()}$filterIdentifiersCapitalized"
                     val appCenterAppTasks = mutableListOf<TaskProvider<out Task>>()
 
-                    appCenterAppTasks.add(project.tasks.register(
-                        "appCenterUploadApk$taskSuffix",
-                        UploadAppCenterAppPackageTask::class.java,
-                        UploadAppCenterAppPackageTask.PackageType.APK,
-                        appCenterApp.apiToken,
-                        appCenterApp.ownerName,
-                        appCenterApp.appName,
-                        appCenterApp.distributionGroups,
-                        appCenterApp.notifyTesters,
+                    val outputFilePathApk =
+                        apkVariant.packageApplicationProvider.get().outputDirectory.get().asFile
+                    val outputFileAab =
+                        //apkVariant.getFinalArtifact(InternalArtifactType.BUNDLE).get().asPath
+                        File(
+                            outputFilePathApk.path.replaceAfterLast(
+                                "/outputs/",
+                                "/bundle/${taskSuffix.decapitalize()}/"
+                            )
+                        )
+
+                    appCenterAppTasks.add(
+                        project.tasks.register(
+                            "appCenterUploadApk$taskSuffix",
+                            UploadAppCenterAppPackageTask::class.java,
+                            UploadAppCenterAppPackageTask.PackageType.APK,
+                            appCenterApp.apiToken,
+                            appCenterApp.ownerName,
+                            appCenterApp.appName,
+                            appCenterApp.distributionGroups,
+                            appCenterApp.notifyTesters,
                         appCenterApp.releaseNotes,
-                        { File(outputDirectory, output.outputFileName) }
+                            { File(outputFilePathApk, output.outputFileName) }
                     ).apply {
                         configure { task ->
                             task.group = APP_CENTER_PLUGIN_GROUP
@@ -93,15 +103,15 @@ class AppCenterPlugin : Plugin<Project> {
                         appCenterApp.releaseNotes,
                         {
                             File(
-                                apkVariant.getFinalArtifact(InternalArtifactType.BUNDLE)
-                                    .get().asPath
+                                outputFileAab,
+                                output.outputFileName.replace(".apk", ".aab")
                             )
                         }
                     ).apply {
                         configure { task ->
                             task.group = APP_CENTER_PLUGIN_GROUP
                             task.description = "Upload ${apkVariant.name} AAB to AppCenter"
-                            task.mustRunAfter(assembleTask)
+                            task.mustRunAfter(bundleTask)
                         }
                     })
                     if (appCenterApp.uploadMappingFiles) {
