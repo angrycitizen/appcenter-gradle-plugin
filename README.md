@@ -30,7 +30,7 @@ File : `app/build.gradle`
 
 ```groovy
 
-apply plugin: "com.betomorrow.appcenter"
+apply plugin: "io.github.angrycitizen.appcenter"
 
 android {
     // ...
